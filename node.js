@@ -7,15 +7,15 @@ dotenv.config();
 
 const MongoClient = mongodb.MongoClient;
 
+// env variables
 const mongo_username = process.env.MONGO_USERNAME;
 const mongo_password = process.env.MONGO_PASSWORD;
 
+// Mongo URI
 const uri = `mongodb://${mongo_username}:${mongo_password}@ac-b88kav0-shard-00-00.ta49mih.mongodb.net:27017,ac-b88kav0-shard-00-01.ta49mih.mongodb.net:27017,ac-b88kav0-shard-00-02.ta49mih.mongodb.net:27017/?ssl=true&replicaSet=atlas-g3wjq1-shard-0&authSource=admin&appName=Cluster0`;
 
-console.log("Username:", mongo_username || "not found");
-console.log("Password:", mongo_password || "not found");
-
-const port = 8000;
+// IMPORTANT: Render port fix
+const port = process.env.PORT || 8000;
 
 MongoClient.connect(uri, {
     maxPoolSize: 50,
@@ -27,14 +27,15 @@ MongoClient.connect(uri, {
     console.error("MongoDB Error:", err);
     process.exit(1);
 })
-.then(async client => {
+.then(async (client) => {
 
     console.log("MongoDB connected");
 
     await ReviewsDAO.injectDB(client);
 
+    // FIXED: use correct port
     app.listen(port, () => {
-        console.log(`Server is running on port: ${port}`);
+        console.log(`Server running on port ${port}`);
     });
 
 });
